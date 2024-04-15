@@ -1,8 +1,11 @@
 package com.gouaultlucas.gellule.activites;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.gouaultlucas.gellule.R;
 import com.gouaultlucas.gellule.modele.Echantillon;
@@ -11,16 +14,10 @@ import com.gouaultlucas.gellule.modele.MouvementType;
 import com.gouaultlucas.gellule.modele.dao.BdAdapter;
 import com.gouaultlucas.gellule.utils.DateUtils;
 
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-
 public class AjoutEchantillon extends AppCompatActivity {
 
     private BdAdapter bdAdapter;
     private EditText editTextCode, editTextLibelle, editTextQuantiteStock;
-    private Button buttonAjouter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,43 +32,40 @@ public class AjoutEchantillon extends AppCompatActivity {
         editTextCode = findViewById(R.id.editTextCode);
         editTextLibelle = findViewById(R.id.editTextLibelle);
         editTextQuantiteStock = findViewById(R.id.editTextQteStock);
-        buttonAjouter = findViewById(R.id.buttonAjout);
+        Button buttonAjouter = findViewById(R.id.buttonAjout);
 
         // Configuration du listener pour le bouton "Ajouter"
-        buttonAjouter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Récupération des valeurs saisies dans les EditTexts
-                String code = editTextCode.getText().toString().trim();
-                String libelle = editTextLibelle.getText().toString().trim();
-                String quantiteStock = editTextQuantiteStock.getText().toString().trim();
+        buttonAjouter.setOnClickListener(v -> {
+            // Récupération des valeurs saisies dans les EditTexts
+            String code = editTextCode.getText().toString().trim();
+            String libelle = editTextLibelle.getText().toString().trim();
+            String quantiteStock = editTextQuantiteStock.getText().toString().trim();
 
-                // Vérification si tous les champs sont remplis
-                if (!code.isEmpty() && !libelle.isEmpty() && !quantiteStock.isEmpty()) {
-                    // Vérification si le code de l'échantillon existe de déjà dans la base de données
-                    if (!bdAdapter.verifierSiCodeExiste(code)) {
-                        // Insertion de l'échantillon dans la base de données
-                        bdAdapter.insererEchantillon(new Echantillon(code, libelle, quantiteStock));
+            // Vérification si tous les champs sont remplis
+            if (!code.isEmpty() && !libelle.isEmpty() && !quantiteStock.isEmpty()) {
+                // Vérification si le code de l'échantillon existe de déjà dans la base de données
+                if (!bdAdapter.verifierSiCodeExiste(code)) {
+                    // Insertion de l'échantillon dans la base de données
+                    bdAdapter.insererEchantillon(new Echantillon(code, libelle, quantiteStock));
 
-                        // Création du mouvement
-                        bdAdapter.insererMouvement(new Mouvement(MouvementType.AJOUT, DateUtils.currentSqlDate(), "Ajout de l'échantillon " + code + " (" + libelle + ")"));
+                    // Création du mouvement
+                    bdAdapter.insererMouvement(new Mouvement(MouvementType.AJOUT, DateUtils.currentSqlDate(), "Ajout de l'échantillon " + code + " (" + libelle + ")"));
 
-                        // Affichage d'un message de succès ou de confirmation
-                        Toast.makeText(AjoutEchantillon.this, "Echantillon ajouté avec succès", Toast.LENGTH_SHORT).show();
+                    // Affichage d'un message de succès ou de confirmation
+                    Toast.makeText(AjoutEchantillon.this, "Echantillon ajouté avec succès", Toast.LENGTH_SHORT).show();
 
-                        // Réinitialisation des EditTexts après l'ajout
-                        editTextCode.setText("");
-                        editTextLibelle.setText("");
-                        editTextQuantiteStock.setText("");
-                    }
-                    else {
-                        // Affichage d'un message d'erreur si le code de l'échantillon existe déjà dans la base de données
-                        Toast.makeText(AjoutEchantillon.this, "Le code de l'échantillon existe déjà dans la base de données", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    // Affichage d'un message d'erreur si tous les champs ne sont pas remplis
-                    Toast.makeText(AjoutEchantillon.this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
+                    // Réinitialisation des EditTexts après l'ajout
+                    editTextCode.setText("");
+                    editTextLibelle.setText("");
+                    editTextQuantiteStock.setText("");
                 }
+                else {
+                    // Affichage d'un message d'erreur si le code de l'échantillon existe déjà dans la base de données
+                    Toast.makeText(AjoutEchantillon.this, "Le code de l'échantillon existe déjà dans la base de données", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                // Affichage d'un message d'erreur si tous les champs ne sont pas remplis
+                Toast.makeText(AjoutEchantillon.this, "Veuillez remplir tous les champs", Toast.LENGTH_SHORT).show();
             }
         });
     }
